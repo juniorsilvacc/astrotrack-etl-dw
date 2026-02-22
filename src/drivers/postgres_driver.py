@@ -1,5 +1,6 @@
+from drivers.interfaces.database_interface import DatabaseInterface
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import create_engine
+from sqlalchemy import Engine, create_engine
 from dotenv import load_dotenv
 import logging
 import time
@@ -10,8 +11,8 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-class PostgreDriver:
-    def __init__(self):
+class PostgreDriver(DatabaseInterface):
+    def __init__(self) -> None:
         load_dotenv()
         
         self.user = os.getenv("DB_USER")
@@ -20,10 +21,10 @@ class PostgreDriver:
         self.port = os.getenv("DB_PORT", "5432")
         self.db_name = os.getenv("DB_NAME")
         
-        self.engine = None
+        self.engine: Engine | None = None
         self._url = f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}"
 
-    def connect(self):
+    def connect(self) -> Engine:
         """Estabelece a conexão com o banco de dados."""
         if self.engine is None:
             for i in range(1, 6):
@@ -40,7 +41,7 @@ class PostgreDriver:
             raise Exception("Não foi possível conectar ao banco de dados após várias tentativas.")
         return self.engine
 
-    def get_engine(self):
+    def get_engine(self) -> Engine:
         """Retorna o engine, conectando se necessário."""
         if not self.engine:
             return self.connect()
