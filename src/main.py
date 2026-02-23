@@ -1,0 +1,1 @@
+print("PONTO DE PARTIDA")
