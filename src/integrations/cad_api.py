@@ -17,4 +17,4 @@ class APICad(HttpRequester):
     
     def get_cad_data(self) -> dict:
         """Busca os dados da API Cad da NASA."""
-        return self._fetch("cad.api")
+        return self.fetch("cad.api")

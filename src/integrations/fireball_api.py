@@ -17,5 +17,5 @@ class APIFireBall(HttpRequester):
     
     def get_fireball_data(self) -> dict:
         """Busca os dados da API FireBall da NASA."""
-        return self._fetch("fireball.api")
+        return self.fetch("fireball.api")
                      

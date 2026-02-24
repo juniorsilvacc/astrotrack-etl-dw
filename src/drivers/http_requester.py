@@ -22,7 +22,7 @@ class HttpRequester(HttpRequesterInterface):
         self._session = requests.Session()
         self._session.headers.update(self._headers)
     
-    def _fetch(self, endpoint: str, params: dict | None = None) -> dict:
+    def fetch(self, endpoint: str, params: dict | None = None) -> dict:
         """Método comum para realizar o GET com tratamento de erro."""
         url = f"{self._base_url}/{endpoint}"
         try:

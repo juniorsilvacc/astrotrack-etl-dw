@@ -20,7 +20,7 @@ class APINeoWs(HttpRequester):
     def _fetch_range(self, start_date: str, end_date: str) -> dict:
         """Método que auxilia a formatar o endpoint e chamar o HttpRequester."""
         endpoint = f"feed?start_date={start_date}&end_date={end_date}&api_key={self.api_key}"
-        return self._fetch(endpoint)
+        return self.fetch(endpoint)
     
     def fetch_incremental(self, date: str = None) -> dict: # (Rodar diariamente (ex: às 02:00 AM)
         """Busca os dados de um único dia."""
