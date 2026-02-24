@@ -4,7 +4,7 @@ import logging
 import os
 
 class APICad(HttpRequester):
-    def __init__(self):
+    def __init__(self) -> None:
         load_dotenv()
         
         base_url = os.getenv("API_CAD_NASA")
