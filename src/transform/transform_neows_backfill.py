@@ -1,6 +1,5 @@
 import pandas as pd
 import json
-import glob
 import os
 import logging
 from pathlib import Path
@@ -11,7 +10,7 @@ logging.basicConfig(
 )
 
 INPUT_FOLDER = Path('data/bronze/neows_historical')
-OUTPUT_FILE = Path('data/silver/neows_backfill_data.parquet')
+OUTPUT_FILE = Path('data/silver/neows_historical/neows_backfill_data.parquet')
 
 COLUMNS_TO_DROP = ['links', 'nasa_jpl_url', '_miles', '_feet', '_astronomical']
 
@@ -99,7 +98,6 @@ def apply_transformations(df):
         df['app_close_approach_date'] = pd.to_datetime(df['app_close_approach_date'])
     
     # 4. Limpeza colunas irrelevantes
-    # cols_remover = [c for c in df.columns if any(word in c for word in COLUMNS_TO_DROP)]
     cols_remover = []
     for col in df.columns:
         for word in COLUMNS_TO_DROP:
@@ -120,14 +118,14 @@ def apply_transformations(df):
     return df
 
 def run_backfill():
+    # 1. Localiza os arquivos
     files = list(INPUT_FOLDER.glob("*.json"))
     
     if not files:
         logging.error("Nenhum arquivo .json encontrado em {INPUT_FOLDER}!")
         return
-
-    logging.info(f"Localizados {len(files)} arquivos. Extraindo asteroides...")
     
+    # 2. Extração
     list_dfs = []
     for f in files:
         temp_df = extract_and_normalize(f)
@@ -138,16 +136,15 @@ def run_backfill():
         logging.error("Nenhum asteroide foi extraído.")
         return
 
+    # 3. Consolidando todos arquivos .json
     df_consolidado = pd.concat(list_dfs, ignore_index=True)
+    
+    # 4. Transformação
     df_end = apply_transformations(df_consolidado)
 
-    # Criar pasta de saída
+    # 5. Salvando
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    
     df_end.to_parquet(OUTPUT_FILE, index=False)
     
-    logging.info(f"Backfill Concluído! ✅")
-    logging.info(f"Total de asteroides únicos salvos: {len(df_end)}")
-
-if __name__ == "__main__":
-    run_backfill()
+    logging.info(f"Processamento Concluído! ✅")
+    logging.info(f"Total de registros únicos salvos: {len(df_end)}")
