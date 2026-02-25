@@ -122,6 +122,3 @@ def run_cad():
     
     logging.info(f"Processamento Concluído! ✅")
     logging.info(f"Total de registros únicos na silver: {len(df_end)}")
-
-if __name__ == "__main__":
-    run_cad()
