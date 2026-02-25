@@ -7,7 +7,7 @@ def save_to_bronze(data: dict, api_name: str, suffix: str):
     base_path = f"data/bronze/{api_name}"
     os.makedirs(base_path, exist_ok=True)
     
-    file_name = f"{api_name}_{suffix}.json"
+    file_name = f"{api_name}_{suffix}_raw.json"
     full_path = os.path.join(base_path, file_name)
     
     with open(full_path, "w", encoding="utf-8") as f:
