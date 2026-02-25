@@ -3,6 +3,7 @@ import json
 import os
 import logging
 from pathlib import Path
+from src.load.load import save_dataframe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -143,6 +144,8 @@ def run_neows():
     # 5. Salvando
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     df_end.to_parquet(OUTPUT_FILE, index=False)
+    
+    save_dataframe(df_end, table_name="df_neows", if_exists="replace")
     
     logging.info(f"Processamento Concluído! ✅")
     logging.info(f"Total de registros únicos salvos: {len(df_end)}")

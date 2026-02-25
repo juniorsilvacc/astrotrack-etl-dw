@@ -1,4 +1,4 @@
-from drivers.interfaces.database_interface import DatabaseInterface
+from src.drivers.interfaces.database_interface import DatabaseInterface
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import Engine, create_engine
 from dotenv import load_dotenv

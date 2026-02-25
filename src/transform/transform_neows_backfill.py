@@ -3,6 +3,7 @@ import json
 import os
 import logging
 from pathlib import Path
+from src.load.load import save_dataframe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -148,6 +149,8 @@ def run_backfill():
     
     logging.info(f"Processamento Concluído! ✅")
     logging.info(f"Total de registros únicos salvos: {len(df_end)}")
+    
+    save_dataframe(df_end, table_name="df_neows_backfill", if_exists="replace")
 
 if __name__ == '__main__':
     run_backfill()
