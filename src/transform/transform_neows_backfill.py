@@ -107,9 +107,9 @@ def apply_transformations(df):
     df = df.drop(columns=cols_remover, errors='ignore')
 
     # 5. Deduplicação
-    if 'id' in df.columns:
+    if 'id' in df.columns and 'app_close_approach_date' in df.columns:
         logging.info(f"Deduplicando. Linhas antes: {len(df)}")
-        df = df.drop_duplicates(subset=['id'])
+        df = df.drop_duplicates(subset=['id', 'app_close_approach_date'])
         logging.info(f"Deduplicando. Linhas após: {len(df)}")
     
     # 6. Renomear colunas
@@ -148,3 +148,6 @@ def run_backfill():
     
     logging.info(f"Processamento Concluído! ✅")
     logging.info(f"Total de registros únicos salvos: {len(df_end)}")
+
+if __name__ == '__main__':
+    run_backfill()
