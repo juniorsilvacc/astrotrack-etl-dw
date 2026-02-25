@@ -28,6 +28,3 @@ def run_extract_cad():
     except Exception as e:
         logging.error(f"Erro na extração de Cad: {e}")
         raise e
-
-if __name__ == "__main__":
-    run_extract_cad()
