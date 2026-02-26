@@ -31,9 +31,9 @@ class PostgreDriver(DatabaseInterface):
                 try:
                     temp_engine = create_engine(self._url)
                     with temp_engine.connect() as conn:
-                        logging.info("Conexão com o PostgreSQL estabelecida com sucesso!")
-                    self.engine = temp_engine
-                    return self.engine
+                        #logging.info("Conexão com o PostgreSQL estabelecida com sucesso!")
+                        self.engine = temp_engine
+                        return self.engine
                     
                 except SQLAlchemyError as e:
                     logging.error(f"Tentativa {i}/5 - Erro ao conectar: {e}")

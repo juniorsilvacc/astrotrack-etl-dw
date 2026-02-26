@@ -37,7 +37,7 @@ def run_sql_file(file_path):
         
         with engine.connect() as conn:
             conn.execute(text(sql_command))
-            conn.commit() # Garante que as tabelas sejam criadas de fato
+            conn.commit()
             
         logging.info(f"Executado com sucesso: {file_path} ✅")
     except Exception as e:
