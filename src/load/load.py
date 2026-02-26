@@ -1,4 +1,5 @@
 from src.drivers.postgres_driver import PostgreDriver
+from sqlalchemy import text
 import logging
 
 logging.basicConfig(
@@ -23,4 +24,22 @@ def save_dataframe(df, table_name, if_exists='append'):
         logging.info(f"Dados persistidos no banco! ✅")
     except Exception as e:
         logging.error(f"Erro ao salvar no banco: {e}")
+        raise e
+
+def run_sql_file(file_path):
+    """Executa scripts SQL (Gold)."""
+    db = PostgreDriver()
+    engine = db.get_engine()
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            sql_command = f.read()
+        
+        with engine.connect() as conn:
+            conn.execute(text(sql_command))
+            conn.commit() # Garante que as tabelas sejam criadas de fato
+            
+        logging.info(f"Executado com sucesso: {file_path} ✅")
+    except Exception as e:
+        logging.error(f"Erro ao executar {file_path}: {e}")
         raise e
