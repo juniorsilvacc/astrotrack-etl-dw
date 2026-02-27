@@ -1,5 +1,9 @@
 from src.extract.extract_fireball import run_extract_fireball
 from src.transform.transform_fireball import run_transform_fireball
+
+from src.extract.extract_cad import run_extract_cad
+from src.transform.transform_cad import run_transform_cad
+
 from src.gold.build_gold import build_gold_layer
 import logging
 
@@ -14,6 +18,9 @@ def main():
     try:
         run_extract_fireball()
         run_transform_fireball()
+        
+        run_extract_cad()
+        run_transform_cad()
         
         build_gold_layer()
 

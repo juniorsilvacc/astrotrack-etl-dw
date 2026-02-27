@@ -93,7 +93,7 @@ def apply_transformations(df):
 
     return df
 
-def run_cad():
+def run_transform_cad():
     # 1. Localiza os arquivos
     files = list(INPUT_FOLDER.glob("*.json"))
     
