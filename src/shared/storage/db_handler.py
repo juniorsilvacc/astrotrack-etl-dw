@@ -7,7 +7,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-def save_dataframe(df, table_name, if_exists='append'):
+def save_dataframe(df, table_name, if_exists='replace'):
     """Envia os dados diretamente para uma tabela no banco."""
     db = PostgreDriver()
     engine = db.get_engine()
