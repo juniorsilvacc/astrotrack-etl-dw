@@ -1,4 +1,4 @@
-from src.drivers.interfaces.http_requester_interface import HttpRequesterInterface
+from src.shared.drivers.interfaces.http_requester_interface import HttpRequesterInterface
 import requests
 import logging
 

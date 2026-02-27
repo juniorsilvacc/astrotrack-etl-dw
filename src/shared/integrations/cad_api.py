@@ -1,4 +1,4 @@
-from src.drivers.http_requester import HttpRequester
+from src.shared.drivers.http_requester import HttpRequester
 from dotenv import load_dotenv
 import logging
 import os

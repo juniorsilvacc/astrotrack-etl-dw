@@ -1,5 +1,5 @@
-from src.integrations.cad_api import APICad
-from src.helpers.save_to_bronze import save_to_bronze
+from src.shared.integrations.cad_api import APICad
+from src.shared.storage.local_storage import save_to_bronze
 from datetime import datetime
 import logging
 

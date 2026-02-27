@@ -1,5 +1,5 @@
-from src.integrations.neows_api import APINeoWs
-from src.helpers.save_to_bronze import save_to_bronze
+from src.shared.integrations.neows_api import APINeoWs
+from src.shared.storage.local_storage import save_to_bronze
 from datetime import datetime, timedelta
 import logging
 

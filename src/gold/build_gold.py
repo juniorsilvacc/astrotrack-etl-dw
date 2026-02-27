@@ -1,4 +1,4 @@
-from src.load.load import run_sql_file
+from src.shared.storage.db_handler import run_sql_file
 from pathlib import Path
 import logging
 import glob
@@ -9,7 +9,7 @@ logging.basicConfig(
 )
 
 def build_gold_layer():
-    scripts = sorted(glob.glob("data/gold/**/*.sql", recursive=True))
+    scripts = sorted(glob.glob("src/gold/analytics/**/*.sql", recursive=True))
     
     logging.info("Iniciando modelagem analítica da Camada Gold...")
     

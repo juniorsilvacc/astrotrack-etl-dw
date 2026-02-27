@@ -1,13 +1,14 @@
-from src.extract.extract_fireball import run_extract_fireball
-from src.transform.transform_fireball import run_transform_fireball
+from src.bronze.extract_fireball import run_extract_fireball
+from src.silver.transform_fireball import run_transform_fireball
 
-from src.extract.extract_cad import run_extract_cad
-from src.transform.transform_cad import run_transform_cad
+from src.bronze.extract_cad import run_extract_cad
+from src.silver.transform_cad import run_transform_cad
 
-from src.extract.extract_neows import run_extract_neows, run_extract_backfill_neows
-from src.transform.transform_neows import run_neows_daily, run_neows_historical
+from src.bronze.extract_neows import run_extract_neows, run_extract_backfill_neows
+from src.silver.transform_neows import run_neows_daily, run_neows_historical
 
 from src.gold.build_gold import build_gold_layer
+
 import logging
 
 logging.basicConfig(
@@ -39,4 +40,4 @@ def main():
         logging.error(f"❌ Falha na Pipeline: {e}")
 
 if __name__ == "__main__":
-    build_gold_layer()
+    main()

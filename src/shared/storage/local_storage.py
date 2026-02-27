@@ -3,7 +3,7 @@ import json
 import logging
 
 def save_to_bronze(data: dict, api_name: str, suffix: str):
-    """Função genérica para salvar qualquer JSON na camada Bronze."""
+    """Salvar JSON na camada Bronze."""
     base_path = f"data/bronze/{suffix}"
     os.makedirs(base_path, exist_ok=True)
     

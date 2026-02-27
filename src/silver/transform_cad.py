@@ -1,44 +1,42 @@
+from src.shared.storage.db_handler import save_dataframe
+from pathlib import Path
 import pandas as pd
 import json
 import os
 import logging
-from pathlib import Path
-from src.load.load import save_dataframe
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-INPUT_FOLDER = Path('data/bronze/cad')
-OUTPUT_FILE = Path('data/silver/cad/cad_data.parquet')
-
-COLUMNS_TO_DROP = ['jd', 'orbit_id', 't_sigma_f']
-
-COLUMNS_TO_RENAME = { 
-    "des": "nome_asteroide",
-    "cd": "data_aproximacao",
-    "dist": "distancia_au",
-    "dist_min": "distancia_minima_au",
-    "dist_max": "distancia_maxima_au",
-    "dist_km": "distancia_nominal_km",
-    "dist_min_km": "distancia_minima_km",
-    "dist_max_km": "distancia_maxima_km",
-    "v_rel": "velocidade_relativa_km_s",
-    "v_inf": "velocidade_infinita_km_s",
-    "h": "magnitude_absoluta"
+CONFIG = {
+    "folders": Path('data/bronze/cad'),
+    "output": Path('data/silver/cad/cad_data.parquet'),
+    "drop_keywords": ['jd', 'orbit_id', 't_sigma_f'],
+    "rename": {
+        "des": "nome_asteroide",
+        "cd": "data_aproximacao",
+        "dist": "distancia_au",
+        "dist_min": "distancia_minima_au",
+        "dist_max": "distancia_maxima_au",
+        "dist_km": "distancia_nominal_km",
+        "dist_min_km": "distancia_minima_km",
+        "dist_max_km": "distancia_maxima_km",
+        "v_rel": "velocidade_relativa_km_s",
+        "v_inf": "velocidade_infinita_km_s",
+        "h": "magnitude_absoluta"
+    },
+    "types": [
+        "dist", 
+        "dist_min", 
+        "dist_max", 
+        "v_rel", 
+        "v_inf", 
+        "h"
+    ],
+    "AU_TO_KM": 149597870.7
 }
-
-TYPES_TO_CONVERT = {
-    'dist', 
-    'dist_min', 
-    'dist_max', 
-    'v_rel', 
-    'v_inf', 
-    'h'
-}
-
-AU_TO_KM = 149597870.7
 
 def extract_and_normalize(file_path):
     """Extrai dados da estrutura CAD (Close-Approach Data) da NASA."""
@@ -64,24 +62,24 @@ def apply_transformations(df):
     logging.info("Aplicando transformações de dados...")
     
     # 1. Conversão de Tipos
-    for col in TYPES_TO_CONVERT:
+    for col in CONFIG["types"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
     
     # 2. Transformar AU em KM
     if 'dist' in df.columns:
-        df['dist_km'] = df['dist'] * AU_TO_KM
+        df['dist_km'] = df['dist'] * CONFIG["AU_TO_KM"]
     if 'dist_min' in df.columns:
-        df['dist_min_km'] = df['dist_min'] * AU_TO_KM
+        df['dist_min_km'] = df['dist_min'] * CONFIG["AU_TO_KM"]
     if 'dist_max' in df.columns:
-        df['dist_max_km'] = df['dist_max'] * AU_TO_KM
+        df['dist_max_km'] = df['dist_max'] * CONFIG["AU_TO_KM"]
     
     # 3. Datas
     if 'cd' in df.columns:
         df['cd'] = pd.to_datetime(df['cd'])
     
     # 4. Limpeza colunas irrelevantes
-    cols_remover = [col for col in COLUMNS_TO_DROP if col in df.columns]
+    cols_remover = [col for col in CONFIG["drop_keywords"] if col in df.columns]
     df = df.drop(columns=cols_remover, errors='ignore')
     
     # 5. Deduplicação (Nome + Data)
@@ -89,16 +87,16 @@ def apply_transformations(df):
         df = df.drop_duplicates(subset=['des', 'cd'], keep='first')
         
     # 6. Renomear colunas
-    df = df.rename(columns=COLUMNS_TO_RENAME)
+    df = df.rename(columns=CONFIG["rename"])
 
     return df
 
 def run_transform_cad():
     # 1. Localiza os arquivos
-    files = list(INPUT_FOLDER.glob("*.json"))
+    files = list(CONFIG["folders"].glob("*.json"))
     
     if not files:
-        logging.error("Nenhum arquivo .json encontrado em {INPUT_FOLDER}!")
+        logging.error(f"Nenhum arquivo .json encontrado em {CONFIG['folders']}!")
         return
     
     # 2. Extração
@@ -118,8 +116,8 @@ def run_transform_cad():
     df_end = apply_transformations(df_raw)
     
     # 4. Salvando
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    df_end.to_parquet(OUTPUT_FILE, index=False)
+    CONFIG["output"].parent.mkdir(parents=True, exist_ok=True)
+    df_end.to_parquet(CONFIG["output"], index=False)
     
     save_dataframe(df_end, table_name="df_cad", if_exists="replace")
     

@@ -1,4 +1,4 @@
-from src.drivers.postgres_driver import PostgreDriver
+from src.shared.drivers.postgres_driver import PostgreDriver
 from sqlalchemy import text
 import logging
 

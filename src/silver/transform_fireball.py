@@ -1,37 +1,37 @@
+from src.shared.storage.db_handler import save_dataframe
+from pathlib import Path
 import pandas as pd
 import json
 import os
 import logging
-from pathlib import Path
-from src.load.load import save_dataframe
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-INPUT_FOLDER = Path('data/bronze/fireball')
-OUTPUT_FILE = Path('data/silver/fireball/fireball_data.parquet')
-
-COLUMNS_TO_RENAME = {
-    "date": "data_evento",
-    "energy": "energia_irradiada_total_joules",
-    "impact-e": "energia_impacto_kt",
-    "lat": "latitude",
-    "lat-dir": "latitude_direcao",
-    "lon": "longitude",
-    "lon-dir": "longitude_direcao",
-    "alt": "altitude_km",
-    "vel": "velocidade_km_s"
-}
-
-TYPES_TO_CONVERT = {
-    "energy",
-    "impact-e",
-    "lat",
-    "lon",
-    "alt",
-    "vel"
+CONFIG = {
+    "folders": Path('data/bronze/fireball'),
+    "output": Path('data/silver/fireball/fireball_data.parquet'),
+    "rename": {
+        "date": "data_evento",
+        "energy": "energia_irradiada_total_joules",
+        "impact-e": "energia_impacto_kt",
+        "lat": "latitude",
+        "lat-dir": "latitude_direcao",
+        "lon": "longitude",
+        "lon-dir": "longitude_direcao",
+        "alt": "altitude_km",
+        "vel": "velocidade_km_s"
+    },
+    "types": [
+        "energy",
+        "impact-e",
+        "lat",
+        "lon",
+        "alt",
+        "vel"
+    ]
 }
 
 def extract_and_normalize(file_path):
@@ -55,7 +55,7 @@ def apply_transformations(df):
     logging.info("Aplicando transformações de dados...")
     
     # 1. Conversão de Tipos Númericos
-    for col in TYPES_TO_CONVERT:
+    for col in CONFIG["types"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
     
@@ -83,15 +83,15 @@ def apply_transformations(df):
     df = df.drop_duplicates(subset=[c for c in subset_cols if c in df.columns])
     
     # 7. Renomear colunas
-    df = df.rename(columns = COLUMNS_TO_RENAME)
+    df = df.rename(columns = CONFIG["rename"])
     
     return df
 
 def run_transform_fireball():
-    files = list(INPUT_FOLDER.glob("*.json"))
+    files = list(CONFIG["folders"].glob("*.json"))
     
     if not files:
-        logging.error("Nenhum arquivo .json encontrado em {INPUT_FOLDER}!")
+        logging.error(f"Nenhum arquivo .json encontrado em {CONFIG['folders']}!")
         return
     
     list_dfs = []
@@ -108,8 +108,8 @@ def run_transform_fireball():
     
     df_end = apply_transformations(df_raw)
     
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    df_end.to_parquet(OUTPUT_FILE, index=False)
+    CONFIG["output"].parent.mkdir(parents=True, exist_ok=True)
+    df_end.to_parquet(CONFIG["output"], index=False)
     
     save_dataframe(df_end, table_name="df_fireball", if_exists="replace")
     

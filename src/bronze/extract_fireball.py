@@ -1,5 +1,5 @@
-from src.integrations.fireball_api import APIFireBall
-from src.helpers.save_to_bronze import save_to_bronze
+from src.shared.integrations.fireball_api import APIFireBall
+from src.shared.storage.local_storage import save_to_bronze
 from datetime import datetime
 import logging
 

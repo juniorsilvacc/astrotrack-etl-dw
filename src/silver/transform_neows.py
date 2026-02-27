@@ -1,9 +1,9 @@
+from src.shared.storage.db_handler import save_dataframe
+from pathlib import Path
 import pandas as pd
 import json
 import os
 import logging
-from pathlib import Path
-from src.load.load import save_dataframe
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,8 +27,10 @@ CONFIG = {
         'app_orbiting_body': 'corpo_orbital'
     },
     "types": [
-        'absolute_magnitude_h', 'app_relative_velocity_kilometers_per_hour',
-        'app_miss_distance_kilometers', 'estimated_diameter_kilometers_estimated_diameter_min',
+        'absolute_magnitude_h', 
+        'app_relative_velocity_kilometers_per_hour',
+        'app_miss_distance_kilometers', 
+        'estimated_diameter_kilometers_estimated_diameter_min',
         'estimated_diameter_kilometers_estimated_diameter_max'
     ]
 }
