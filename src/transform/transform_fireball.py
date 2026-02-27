@@ -87,7 +87,7 @@ def apply_transformations(df):
     
     return df
 
-def run_fireball():
+def run_transform_fireball():
     files = list(INPUT_FOLDER.glob("*.json"))
     
     if not files:

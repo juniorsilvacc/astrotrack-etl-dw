@@ -1,16 +1,26 @@
-from src.transform.transform_cad import run_cad
-from src.transform.transform_fireball import run_fireball
-from src.transform.transform_neows import run_neows
-from src.transform.transform_neows_backfill import run_backfill
+from src.extract.extract_fireball import run_extract_fireball
+from src.transform.transform_fireball import run_transform_fireball
+from src.gold.build_gold import build_gold_layer
 import logging
 
-if __name__ == "__main__":  
+logging.basicConfig(
+    level=logging.INFO, 
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+def main():
+    logging.info("🚀 Iniciando Pipeline...")
+
     try:
-        run_cad()
-        run_fireball()
-        run_neows()
-        run_backfill()
+        run_extract_fireball()
+        run_transform_fireball()
         
-        logging.info("Toda a pipeline foi executada com sucesso! 🚀")
+        build_gold_layer()
+
+        logging.info("Pipeline finalizada com sucesso! ✅")
+
     except Exception as e:
-        logging.error(f"Falha na execução da pipeline: {e}")
+        logging.error(f"❌ Falha na Pipeline: {e}")
+
+if __name__ == "__main__":
+    main()
