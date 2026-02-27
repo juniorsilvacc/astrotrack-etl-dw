@@ -1,3 +1,4 @@
+-- Tabela Fato de Aproximações (CAD)
 DROP TABLE IF EXISTS gold_cad_fct_aproximacoes;
 
 CREATE TABLE gold_cad_fct_aproximacoes AS

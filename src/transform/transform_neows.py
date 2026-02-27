@@ -10,30 +10,27 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-INPUT_FOLDER = Path('data/bronze/neows')
-OUTPUT_FILE = Path('data/silver/neows/neows_data.parquet')
-
-COLUMNS_TO_DROP = ['links', 'nasa_jpl_url', '_miles', '_feet', '_astronomical']
-
-COLUMNS_TO_RENAME = {
-    'id': 'asteroide_id',
-    'name': 'nome_asteroide',
-    'absolute_magnitude_h': 'magnitude_absoluta',
-    'is_potentially_hazardous_asteroid': 'ameaca_potencial',
-    'is_sentry_object': 'objeto_sentry',
-    'diameter_avg_km': 'diametro_medio_km',
-    'app_close_approach_date': 'data_aproximacao',
-    'app_relative_velocity_kilometers_per_hour': 'velocidade_km_h',
-    'app_miss_distance_kilometers': 'distancia_terra_km',
-    'app_orbiting_body': 'corpo_orbital'
-}
-
-TYPES_TO_CONVERT = {
-    'absolute_magnitude_h',
-    'app_relative_velocity_kilometers_per_hour',
-    'app_miss_distance_kilometers',
-    'estimated_diameter_kilometers_estimated_diameter_min',
-    'estimated_diameter_kilometers_estimated_diameter_max'
+CONFIG = {
+    "folders": [Path('data/bronze/neows'), Path('data/bronze/neows_historical')],
+    "output": [Path('data/silver/neows/neows_data.parquet'), Path('data/silver/neows_historical/neows_backfill_data.parquet')],
+    "drop_keywords": ['links', 'nasa_jpl_url', '_miles', '_feet', '_astronomical'],
+    "rename": {
+        'id': 'asteroide_id',
+        'name': 'nome_asteroide',
+        'absolute_magnitude_h': 'magnitude_absoluta',
+        'is_potentially_hazardous_asteroid': 'ameaca_potencial',
+        'is_sentry_object': 'objeto_sentry',
+        'diameter_avg_km': 'diametro_medio_km',
+        'app_close_approach_date': 'data_aproximacao',
+        'app_relative_velocity_kilometers_per_hour': 'velocidade_km_h',
+        'app_miss_distance_kilometers': 'distancia_terra_km',
+        'app_orbiting_body': 'corpo_orbital'
+    },
+    "types": [
+        'absolute_magnitude_h', 'app_relative_velocity_kilometers_per_hour',
+        'app_miss_distance_kilometers', 'estimated_diameter_kilometers_estimated_diameter_min',
+        'estimated_diameter_kilometers_estimated_diameter_max'
+    ]
 }
 
 def extract_and_normalize(file_path):
@@ -44,7 +41,6 @@ def extract_and_normalize(file_path):
         
         # Essa chave contém datas, e dentro das datas estão as listas de asteroides.
         all_asteroids = []
-        
         if 'near_earth_objects' in data:
             for date in data['near_earth_objects']:
                 for asteroid in data['near_earth_objects'][date]:
@@ -84,7 +80,7 @@ def apply_transformations(df):
     logging.info("Aplicando transformações de dados...")
 
     # 1. Conversão de Tipos
-    for col in TYPES_TO_CONVERT:
+    for col in CONFIG['types']:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
     
@@ -101,7 +97,7 @@ def apply_transformations(df):
     # 4. Limpeza colunas irrelevantes
     cols_remover = []
     for col in df.columns:
-        for word in COLUMNS_TO_DROP:
+        for word in CONFIG['drop_keywords']:
             if word in col:
                 cols_remover.append(col)
                 break
@@ -112,13 +108,13 @@ def apply_transformations(df):
         df = df.drop_duplicates(subset=['id', 'app_close_approach_date'])
     
     # 6. Renomear colunas
-    df = df.rename(columns=COLUMNS_TO_RENAME)
+    df = df.rename(columns=CONFIG['rename'])
 
     return df
 
-def run_neows():
+def run_transform_neows(input_folder: Path, output_file: Path, table_name: str):
     # 1. Localiza os arquivos
-    files = list(INPUT_FOLDER.glob("*.json"))
+    files = list(input_folder.glob("**/*.json"))
     
     if not files:
         logging.error("Nenhum arquivo .json encontrado em {INPUT_FOLDER}!")
@@ -142,10 +138,25 @@ def run_neows():
     df_end = apply_transformations(df_consolidado)
 
     # 5. Salvando
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    df_end.to_parquet(OUTPUT_FILE, index=False)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    df_end.to_parquet(output_file, index=False)
     
-    save_dataframe(df_end, table_name="df_neows", if_exists="replace")
+    save_dataframe(df_end, table_name=table_name, if_exists="replace")
     
     logging.info(f"Processamento Concluído! ✅")
     logging.info(f"Total de registros únicos salvos: {len(df_end)}")
+
+
+def run_neows_daily():
+    run_transform_neows(
+        input_folder=Path('data/bronze/neows'),
+        output_file=Path('data/silver/neows/neows_data.parquet'),
+        table_name="df_neows"
+    )
+
+def run_neows_historical():
+    run_transform_neows(
+        input_folder=Path('data/bronze/neows_historical'),
+        output_file=Path('data/silver/neows_historical/neows_backfill_data.parquet'),
+        table_name="df_neows_historical"
+    )

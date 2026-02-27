@@ -1,3 +1,4 @@
+-- Tabela Dimmensão de Objeto Espacial (CAD)
 DROP TABLE IF EXISTS gold_cad_dim_objeto;
 
 CREATE TABLE gold_cad_dim_objeto AS

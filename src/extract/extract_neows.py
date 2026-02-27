@@ -15,27 +15,27 @@ def run_extract_neows(target_date: str = None, is_historical: bool = False):
     if not target_date:
         target_date = datetime.now().strftime('%Y-%m-%d')
     
+    today_str = target_date
+
     # Define o nome da subpasta com base no tipo de extração
-    api_folder = "neows_historical" if is_historical else "neows"
+    api_folder = "neows_historical" if is_historical else f"{today_str}"
     
     try:
-        client = APINeoWs()
-        logging.info(f"Extraindo dados ({api_folder}) para: {target_date}")
-        
-        raw_data = client.fetch_incremental(date=target_date)
+        client = APINeoWs()        
+        raw_data = client.fetch_incremental(date=target_date) 
         
         path = save_to_bronze(
             data=raw_data, 
             api_name=api_folder, 
-            suffix=target_date
+            suffix='neows'
         )
         
         return path
     except Exception as e:
-        logging.error(f"Erro na extração NeoWs ({target_date}): {e}")
+        logging.error(f"Erro na extração NeoWs: {e}")
         raise e
 
-def run_backfill_neows(months: int = 6):
+def run_extract_backfill_neows(months: int = 6):
     """Extração para buscar o histórico de X meses."""
     logging.info(f"Iniciando Backfill de {months} meses...")
     

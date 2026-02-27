@@ -1,4 +1,4 @@
--- Dimensão de localização
+-- Tabela Dimensão de Localização (Fireball)
 DROP TABLE IF EXISTS gold_fireball_dim_localizacao;
 
 CREATE TABLE gold_fireball_dim_localizacao AS

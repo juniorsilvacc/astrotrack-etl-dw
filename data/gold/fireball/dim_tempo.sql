@@ -1,4 +1,4 @@
--- Dimensão de tempo
+-- Tabela Dimensão de Tempo (Fireball)
 DROP TABLE IF EXISTS gold_fireball_dim_tempo;
 
 CREATE TABLE gold_fireball_dim_tempo AS
