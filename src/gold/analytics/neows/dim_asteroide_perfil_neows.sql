@@ -1,4 +1,4 @@
--- Tabela Dimensão de Perfil Asteroide (CAD)
+-- Tabela Dimensão de Perfil Asteroide (NeoWS)
 DROP TABLE IF EXISTS gold_neows_dim_asteroide CASCADE;
 
 CREATE TABLE gold_neows_dim_asteroide AS
@@ -15,7 +15,6 @@ FROM (
         asteroide_id, nome_asteroide, magnitude_absoluta, 
         diametro_medio_km, ameaca_potencial, objeto_sentry
     FROM (
-        -- LISTAR COLUNAS EXPLICITAMENTE AQUI:
         SELECT asteroide_id, nome_asteroide, magnitude_absoluta, diametro_medio_km, ameaca_potencial, objeto_sentry FROM df_neows
         UNION ALL
         SELECT asteroide_id, nome_asteroide, magnitude_absoluta, diametro_medio_km, ameaca_potencial, objeto_sentry FROM df_neows_historical
